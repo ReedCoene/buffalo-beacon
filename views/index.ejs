@@ -92,7 +92,11 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    const pins = <%- JSON.stringify(pins) %>;
+    // <-escaping stops a closing script tag inside an org name from ending this script block
+    // (the HTML parser ends a script element on that tag even inside strings or comments)
+    const pins = <%- JSON.stringify(pins).replace(/</g, '\\u003c') %>;
+    // bindPopup treats strings as HTML, and org name/address are org-typed text — escape them
+    const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const map = L.map('map').setView([42.8864, -78.8784], 12); // downtown Buffalo
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors',
@@ -110,8 +114,8 @@
       });
       const m = L.marker([p.lat, p.lng], { icon }).addTo(map);
       m.bindPopup(
-        `<strong>${p.name}</strong><br>${p.isOpen ? '🟢 Open now' : '⚪ Closed'}<br>` +
-        `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.address)}" target="_blank" rel="noopener">Get directions</a>`
+        `<strong>${esc(p.name)}</strong><br>${p.isOpen ? '🟢 Open now' : '⚪ Closed'}<br>` +
+        `<a href="https://www.google.com/maps/search/?api=1&query=${esc(encodeURIComponent(p.address))}" target="_blank" rel="noopener">Get directions</a>`
       );
       markers.push(m);
     });

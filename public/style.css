@@ -42,10 +42,10 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* outline only — setting border-radius here would reshape the focused control itself */
 :focus-visible {
   outline: 3px solid rgba(255, 183, 3, 0.65);
   outline-offset: 2px;
-  border-radius: 6px;
 }
 
 /* ---- Header ---- */
@@ -126,17 +126,22 @@ header h1 span { color: var(--beacon-deep); }
     radial-gradient(2px 2px at 9% 51%, rgba(255,255,255,0.4), transparent 60%),
     radial-gradient(1.8px 1.8px at 55% 84%, rgba(255,255,255,0.35), transparent 60%);
   background-size: 520px 520px;
-  animation: snowfall 46s linear infinite;
+  animation: snowfall-near 46s linear infinite;
   opacity: 0.7;
 }
 .hero::after {
   background-size: 780px 780px;
-  animation-duration: 74s;
+  animation: snowfall-far 74s linear infinite;
   opacity: 0.45;
 }
-@keyframes snowfall {
+/* each layer's travel is exactly one tile height, so the loop wraps seamlessly */
+@keyframes snowfall-near {
   from { background-position: 0 0; }
-  to   { background-position: 60px 520px; }
+  to   { background-position: 0 520px; }
+}
+@keyframes snowfall-far {
+  from { background-position: 0 0; }
+  to   { background-position: 0 780px; }
 }
 
 .hero-inner { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; }
@@ -258,13 +263,15 @@ main.dash { max-width: 780px; margin-top: 40px; }
   100% { box-shadow: 0 2px 6px rgba(0,0,0,0.35), 0 0 0 0 rgba(30, 158, 80, 0); }
 }
 
-.leaflet-popup-content-wrapper {
+/* .leaflet-container prefix so these outrank Leaflet's own rules — leaflet.css
+   loads after style.css and would otherwise win the cascade tie */
+.leaflet-container .leaflet-popup-content-wrapper {
   border-radius: 12px;
   box-shadow: var(--shadow);
   font-family: var(--ui);
 }
-.leaflet-popup-content { font-size: 0.92rem; line-height: 1.5; }
-.leaflet-popup-content a { color: var(--navy); font-weight: 600; }
+.leaflet-container .leaflet-popup-content { font-size: 0.92rem; line-height: 1.5; }
+.leaflet-container .leaflet-popup-content a { color: var(--navy); font-weight: 600; }
 
 /* ---- Section headings ---- */
 .section-title {
@@ -403,12 +410,12 @@ button.small { padding: 8px 14px; font-size: 0.88rem; }
 button:disabled { opacity: 0.6; cursor: wait; transform: none; }
 
 .field { margin-bottom: 18px; }
-.field label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
+/* :not(.switch) — the toggle switch label must stay a flex row, not a block */
+.field label:not(.switch) { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
 .field input[type=text], .field input[type=email] { width: 100%; }
 .hint { color: var(--muted); font-size: 0.85rem; margin: 6px 0 0; }
 
 /* ---- Open-now toggle switch ---- */
-/* label.switch so it outranks the `.field label { display:block }` default */
 label.switch {
   display: inline-flex;
   align-items: center;

@@ -1,5 +1,9 @@
 // ponytail: Node's built-in sqlite (stable since Node 22.5) instead of better-sqlite3 —
 // same API shape, no native compilation, no node-gyp/Python toolchain needed.
+// dotenv loads here (not just in server.js) so every entry point that touches the DB —
+// seed.js, add-org.js, backfill-coords.js — resolves the same DB_PATH. dotenv is
+// idempotent, so server.js loading it again is harmless.
+require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 const { DatabaseSync } = require('node:sqlite');
 const path = require('path');
 

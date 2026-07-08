@@ -74,8 +74,12 @@ fly volumes create beacon_data --region ewr --size 1
 fly secrets set SESSION_SECRET=$(openssl rand -hex 32) \
   BASE_URL=https://buffalo-beacon.fly.dev \
   ANTHROPIC_API_KEY=... RESEND_API_KEY=...
-fly deploy
+fly deploy --ha=false
 ```
+
+`--ha=false` matters: SQLite lives on a single volume, so the app must run as a
+single machine. Two machines would each get their own volume copy and logins/
+updates would only work on whichever machine served the request.
 
 `BASE_URL` matters — magic-link logins and unsubscribe links are built from it.
 SQLite lives on the `beacon_data` volume (`DB_PATH=/data/beacon.sqlite`), so
