@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Buffalo Beacon</title>
-  <link rel="stylesheet" href="/style.css">
+  <%- include('partials/head', { title: 'Buffalo Beacon — who\'s open right now' }) %>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
-  <header>
-    <a href="/" class="logo"><h1>Buffalo <span>Beacon</span></h1></a>
-    <a href="/login" class="nav-link">Organization login</a>
-  </header>
+  <%- include('partials/header') %>
 
   <section class="hero">
-    <h2>Find an open door.</h2>
-    <p>Live shelters, food pantries, and warming centers across Buffalo &mdash; when the weather turns dangerous and you need a warm place or a hot meal.</p>
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Buffalo, NY &middot; Verified live status</p>
+      <h2>Find an open door.</h2>
+      <p class="hero-sub">Live shelters, food pantries, and warming centers across Buffalo &mdash; when the weather turns dangerous and you need a warm place or a hot meal.</p>
+      <div class="hero-stats">
+        <% const openCount = orgs.filter(o => o.is_open).length; %>
+        <% const verifiedCount = orgs.filter(o => o.verified).length; %>
+        <span class="stat"><span class="pulse-dot" aria-hidden="true"></span><strong><%= openCount %></strong>&nbsp;open right now</span>
+        <span class="stat"><strong><%= verifiedCount %></strong>&nbsp;verified organization<%= verifiedCount === 1 ? '' : 's' %></span>
+        <span class="stat">updated by the orgs themselves</span>
+      </div>
+    </div>
   </section>
 
   <main>
@@ -23,10 +27,10 @@
       <div class="msg"><%= msg %></div>
     <% } %>
 
-    <div id="map"></div>
+    <div class="map-wrap"><div id="map" aria-label="Map of shelters and pantries"></div></div>
 
     <% if (orgs.length === 0) { %>
-      <p class="empty">No organizations listed yet.</p>
+      <p class="empty">No organizations listed yet &mdash; check back soon.</p>
     <% } %>
 
     <% if (board && board.length) { %>
@@ -36,25 +40,32 @@
         <div class="board-list">
           <% board.forEach(p => { %>
             <div class="board-card">
-              <span class="board-tag <%= p.kind %>"><%= p.kind === 'need' ? '🙋 Needs help' : '📣 Update' %></span>
+              <span class="board-tag <%= p.kind %>"><%= p.kind === 'need' ? 'Needs help' : 'Update' %></span>
               <p class="board-text"><%= p.body %></p>
-              <p class="board-org"><%= p.org_name %><% if (p.org_verified) { %> <span class="verified">✓</span><% } %></p>
+              <p class="board-org"><%= p.org_name %><% if (p.org_verified) { %> <span class="verified">&#10003;</span><% } %></p>
             </div>
           <% }) %>
         </div>
       </section>
     <% } %>
 
-    <h2 class="section-title">Open shelters &amp; pantries</h2>
+    <% if (orgs.length) { %>
+      <h2 class="section-title">Open shelters &amp; pantries</h2>
+      <p class="section-sub">Open places sort to the top. Every <span class="verified">&#10003; Verified</span> badge means Buffalo Beacon vetted the organization itself.</p>
+    <% } %>
     <div class="grid">
       <% orgs.forEach(org => { %>
-        <div class="card">
-          <span class="badge <%= org.is_open ? 'open' : 'closed' %>">
-            <span class="dot"></span><%= org.is_open ? 'Open now' : 'Closed' %>
-          </span>
-          <h3><%= org.name %><% if (org.verified) { %> <span class="verified" title="Verified by Buffalo Beacon">✓ Verified</span><% } %></h3>
+        <article class="card">
+          <div class="card-top">
+            <span class="badge <%= org.is_open ? 'open' : 'closed' %>">
+              <span class="dot" aria-hidden="true"></span><%= org.is_open ? 'Open now' : 'Closed' %>
+            </span>
+            <% const fresh = timeAgo(org.updated_at); %>
+            <% if (fresh) { %><span class="freshness">Updated <%= fresh %></span><% } %>
+          </div>
+          <h3><%= org.name %><% if (org.verified) { %> <span class="verified" title="Verified by Buffalo Beacon">&#10003; Verified</span><% } %></h3>
           <% if (org.address) { %>
-            <p class="addr"><a class="directions" href="<%= mapsLink(org.address) %>" target="_blank" rel="noopener">📍 <%= org.address %></a></p>
+            <p class="addr"><a class="directions" href="<%= mapsLink(org.address) %>" target="_blank" rel="noopener">&#128205; <%= org.address %></a></p>
           <% } %>
           <% if (org.hours_text) { %>
             <p class="hours"><strong>Hours:</strong> <%= org.hours_text %></p>
@@ -63,20 +74,21 @@
             <p class="desc"><%= org.description %></p>
           <% } %>
 
-          <% if (org.address) { %>
-            <a class="directions-btn" href="<%= mapsLink(org.address) %>" target="_blank" rel="noopener">Get directions</a>
-          <% } %>
-
-          <form class="subscribe-form" method="post" action="/subscribe/<%= org.id %>">
-            <input type="email" name="email" placeholder="your email" required>
-            <button type="submit">Get updates</button>
-          </form>
-        </div>
+          <div class="card-actions">
+            <% if (org.address) { %>
+              <a class="directions-btn" href="<%= mapsLink(org.address) %>" target="_blank" rel="noopener">Get directions</a>
+            <% } %>
+            <form class="subscribe-form" method="post" action="/subscribe/<%= org.id %>">
+              <input type="email" name="email" placeholder="your email" aria-label="Email for <%= org.name %> updates" required>
+              <button type="submit">Get updates</button>
+            </form>
+          </div>
+        </article>
       <% }) %>
     </div>
   </main>
 
-  <footer>Buffalo Beacon &mdash; built to help neighbors find open doors during hard weather.</footer>
+  <%- include('partials/footer') %>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
@@ -89,10 +101,10 @@
 
     const markers = [];
     pins.forEach(p => {
-      const color = p.isOpen ? '#2a9d4b' : '#8a8f98';
+      const color = p.isOpen ? '#1e9e50' : '#7d8698';
       const icon = L.divIcon({
         className: 'beacon-pin',
-        html: `<div style="background:${color}"></div>`,
+        html: `<div class="${p.isOpen ? 'pin-open' : ''}" style="background:${color}"></div>`,
         iconSize: [22, 22],
         iconAnchor: [11, 11],
       });
@@ -104,9 +116,9 @@
       markers.push(m);
     });
 
-    // Zoom to fit all pins if we have any.
+    // Zoom to fit all pins if we have any — capped so a single pin doesn't zoom to rooftop level.
     if (markers.length) {
-      map.fitBounds(L.featureGroup(markers).getBounds().pad(0.3));
+      map.fitBounds(L.featureGroup(markers).getBounds().pad(0.3), { maxZoom: 14 });
     }
   </script>
 </body>

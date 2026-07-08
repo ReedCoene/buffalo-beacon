@@ -1,7 +1,7 @@
 // Runnable self-check for the security + notify logic. No framework.
 //   node test.js   (exits non-zero on failure)
 const assert = require('node:assert');
-const { mapsLink, isTokenUsable, statusChanged, buildTweet, tweetIntentUrl } = require('./lib/logic');
+const { mapsLink, isTokenUsable, statusChanged, buildTweet, tweetIntentUrl, timeAgo } = require('./lib/logic');
 
 const future = new Date(Date.now() + 60000).toISOString();
 const past = new Date(Date.now() - 60000).toISOString();
@@ -32,5 +32,13 @@ const tweetText = buildTweet(
 assert.ok(tweetText.includes('OPEN NOW'), 'open status in tweet');
 assert.ok(tweetText.includes('Today 9am-3pm'), 'hours in tweet');
 assert.ok(tweetIntentUrl(tweetText).startsWith('https://twitter.com/intent/tweet?text='), 'valid intent url');
+
+// --- timeAgo: freshness labels; SQLite timestamps are UTC with no 'Z' marker ---
+const at = new Date('2026-07-07T12:00:00Z');
+assert.equal(timeAgo('2026-07-07 11:59:40', at), 'just now');
+assert.equal(timeAgo('2026-07-07 11:15:00', at), '45 min ago');
+assert.equal(timeAgo('2026-07-07 09:00:00', at), '3 hrs ago', 'space-separated UTC must not be parsed as local time');
+assert.equal(timeAgo('2026-07-05 12:00:00', at), '2 days ago');
+assert.equal(timeAgo(null, at), '', 'missing timestamp renders nothing');
 
 console.log('All checks passed.');

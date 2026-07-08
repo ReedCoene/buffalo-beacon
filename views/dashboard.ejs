@@ -1,25 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><%= org.name %> Dashboard &mdash; Buffalo Beacon</title>
-  <link rel="stylesheet" href="/style.css">
+  <%- include('partials/head', { title: org.name + ' — Buffalo Beacon dashboard' }) %>
 </head>
 <body>
-  <header>
-    <a href="/"><h1>Buffalo <span>Beacon</span></h1></a>
-    <form method="post" action="/logout"><button class="secondary" type="submit">Log out</button></form>
-  </header>
-  <main>
-    <h2><%= org.name %> Dashboard</h2>
+  <%- include('partials/header', { org }) %>
+
+  <main class="dash">
+    <h2 class="page-title"><%= org.name %></h2>
+    <p class="page-sub">
+      Everything you save here publishes instantly to the public page<% if (timeAgo(org.updated_at)) { %> &middot; last updated <%= timeAgo(org.updated_at) %><% } %>.
+    </p>
 
     <% if (typeof error !== 'undefined' && error) { %>
       <div class="error"><%= error %></div>
     <% } %>
     <% if (typeof saved !== 'undefined' && saved) { %>
       <div class="msg">
-        Saved &mdash; your public page is updated<% if (org.is_open) { %> and subscribers were emailed<% } %>.
+        Saved &mdash; your public page is updated<% if (typeof notified !== 'undefined' && notified) { %> and subscribers were emailed<% } %>.
         <% if (typeof tweetUrl !== 'undefined' && tweetUrl) { %>
           <div style="margin-top:10px;">
             <a class="tweet-btn" href="<%= tweetUrl %>" target="_blank" rel="noopener">Post this update to X / Twitter</a>
@@ -29,8 +27,20 @@
       </div>
     <% } %>
 
-    <div class="card">
+    <div class="panel">
+      <h3>Your public listing</h3>
+      <p class="panel-sub">This is what neighbors, families, and 211 operators see. Keep it current &mdash; especially the open/closed switch.</p>
+
       <form method="post" action="/dashboard/update">
+        <div class="field">
+          <label class="switch">
+            <input type="checkbox" id="is_open" name="is_open" <%= org.is_open ? 'checked' : '' %>>
+            <span class="track" aria-hidden="true"></span>
+            <span class="switch-label">We are open right now</span>
+          </label>
+          <p class="hint">Flipping this emails everyone subscribed to you &mdash; that's the point. Flip it the moment you open or close.</p>
+        </div>
+
         <div class="field">
           <label for="name">Organization name *</label>
           <input type="text" id="name" name="name" value="<%= org.name %>" required>
@@ -47,39 +57,33 @@
         </div>
 
         <div class="field">
-          <label>
-            <input type="checkbox" id="is_open" name="is_open" <%= org.is_open ? 'checked' : '' %> style="width:auto;">
-            We are open right now
-          </label>
-        </div>
-
-        <div class="field">
           <label for="description">Description</label>
-          <textarea id="description" name="description" placeholder="Give us a slight description that AI can improve, e.g. 'open 9-3 today, hot food, giving away toiletries'"><%= org.description %></textarea>
-          <button type="button" class="secondary" id="improveBtn" style="margin-top:8px;">Improve with AI</button>
+          <textarea id="description" name="description" placeholder="A rough note is fine — e.g. 'open 9-3 today, hot food, giving away toiletries' — then let AI polish it."><%= org.description %></textarea>
+          <button type="button" class="secondary small" id="improveBtn" style="margin-top:10px;">&#10024; Improve with AI</button>
           <div class="ai-preview" id="aiPreview">
+            <p class="ai-preview-label">AI suggestion &mdash; you decide</p>
             <div id="aiPreviewText"></div>
-            <div style="margin-top:8px;">
-              <button type="button" id="useAi">Use this</button>
-              <button type="button" class="secondary" id="discardAi">Keep my original</button>
+            <div style="margin-top:10px;">
+              <button type="button" class="small" id="useAi">Use this</button>
+              <button type="button" class="secondary small" id="discardAi">Keep my original</button>
             </div>
           </div>
         </div>
 
-        <button type="submit">Save</button>
+        <button type="submit">Save &amp; publish</button>
       </form>
     </div>
 
-    <div class="card">
-      <h3 style="margin-top:0;">Community board</h3>
-      <p style="color:#667085;margin-top:0;">Post a <strong>need</strong> (volunteers, donations) or an <strong>update</strong> (an event, an announcement). These show up publicly so neighbors can help or show up.</p>
+    <div class="panel">
+      <h3>Community board</h3>
+      <p class="panel-sub">Post a <strong>need</strong> (volunteers, donations) or an <strong>update</strong> (an event, an announcement). These show up publicly so neighbors can help or show up.</p>
 
       <form method="post" action="/dashboard/post">
         <div class="field">
           <label for="kind">Type</label>
-          <select id="kind" name="kind" style="font-family:inherit;font-size:1rem;padding:10px 12px;border:1px solid #cfd6de;border-radius:10px;">
-            <option value="need">🙋 Need help (volunteers / donations)</option>
-            <option value="update">📣 Update / event</option>
+          <select id="kind" name="kind">
+            <option value="need">&#128587; Need help (volunteers / donations)</option>
+            <option value="update">&#128226; Update / event</option>
           </select>
         </div>
         <div class="field">
@@ -93,7 +97,7 @@
         <h4>Your posts</h4>
         <% posts.forEach(p => { %>
           <div class="board-item">
-            <span class="board-tag <%= p.kind %>"><%= p.kind === 'need' ? 'NEED' : 'UPDATE' %></span>
+            <span class="board-tag <%= p.kind %>"><%= p.kind === 'need' ? 'Need' : 'Update' %></span>
             <span class="board-body"><%= p.body %></span>
             <form method="post" action="/dashboard/post/<%= p.id %>/delete" style="display:inline;">
               <button type="submit" class="link-btn" title="Delete">Remove</button>
@@ -103,6 +107,8 @@
       <% } %>
     </div>
   </main>
+
+  <%- include('partials/footer') %>
 
   <script>
     const improveBtn = document.getElementById('improveBtn');
@@ -126,7 +132,7 @@
         preview.style.display = 'block';
       } finally {
         improveBtn.disabled = false;
-        improveBtn.textContent = 'Improve with AI';
+        improveBtn.textContent = '✨ Improve with AI';
       }
     });
 

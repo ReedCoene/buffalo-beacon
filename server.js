@@ -6,7 +6,7 @@ const session = require('express-session');
 const db = require('./db');
 const { sendEmail } = require('./lib/mailer');
 const { improveDescription } = require('./lib/claude');
-const { mapsLink, isTokenUsable, statusChanged, buildTweet, tweetIntentUrl } = require('./lib/logic');
+const { mapsLink, isTokenUsable, statusChanged, buildTweet, tweetIntentUrl, timeAgo } = require('./lib/logic');
 const { geocode } = require('./lib/geocode');
 
 const app = express();
@@ -32,6 +32,9 @@ app.use((req, res, next) => {
   res.locals.msg = req.query.msg || null;
   next();
 });
+
+// available in every view — freshness labels on listings
+app.locals.timeAgo = timeAgo;
 
 function requireOrg(req, res, next) {
   if (!req.session.orgId) return res.redirect('/login');
@@ -214,7 +217,7 @@ app.post('/dashboard/update', requireOrg, async (req, res) => {
   }
 
   const tweetUrl = tweetIntentUrl(buildTweet(updatedOrg, BASE_URL));
-  res.render('dashboard', { org: updatedOrg, saved: true, tweetUrl, posts: orgPosts(req.org.id) });
+  res.render('dashboard', { org: updatedOrg, saved: true, notified: shouldNotify, tweetUrl, posts: orgPosts(req.org.id) });
 });
 
 app.listen(PORT, () => {
