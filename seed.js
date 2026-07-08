@@ -1,14 +1,15 @@
 // Seeds the two real Buffalo orgs mentioned by name so the directory has real, recognizable
 // entries for a demo. Login emails here are placeholders until the real contact is confirmed —
 // swap them with `node add-org.js` once your teacher connects you, or edit directly in the DB.
+require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 const db = require('./db');
 
 const orgs = [
   {
     name: 'Friends of Night People',
-    // ponytail: using your own email so you can personally test the full login → dashboard →
-    // AI-improve → notify-subscribers loop before handing real accounts to real orgs.
-    email: 'friends@placeholder.buffalobeacon.local',
+    // Set SEED_TEST_EMAIL in .env to your own address to personally test the full
+    // login → dashboard → AI-improve → notify-subscribers loop before real orgs get accounts.
+    email: process.env.SEED_TEST_EMAIL || 'friends@placeholder.buffalobeacon.local',
   },
   {
     name: "Luke's Mission of Mercy",
