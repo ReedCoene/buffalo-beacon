@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Buffalo Beacon</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+  <header>
+    <a href="/" class="logo"><h1>Buffalo <span>Beacon</span></h1></a>
+    <a href="/login" class="nav-link">Organization login</a>
+  </header>
+
+  <section class="hero">
+    <h2>Find an open door.</h2>
+    <p>Live shelters, food pantries, and warming centers across Buffalo &mdash; when the weather turns dangerous and you need a warm place or a hot meal.</p>
+  </section>
+
+  <main>
+    <% if (msg) { %>
+      <div class="msg"><%= msg %></div>
+    <% } %>
+
+    <div id="map"></div>
+
+    <% if (orgs.length === 0) { %>
+      <p class="empty">No organizations listed yet.</p>
+    <% } %>
+
+    <% if (board && board.length) { %>
+      <section class="board">
+        <h2 class="section-title">Ways to help &amp; what's happening</h2>
+        <p class="section-sub">Local orgs are asking for a hand or sharing news. Show up, pitch in, or spread the word.</p>
+        <div class="board-list">
+          <% board.forEach(p => { %>
+            <div class="board-card">
+              <span class="board-tag <%= p.kind %>"><%= p.kind === 'need' ? '🙋 Needs help' : '📣 Update' %></span>
+              <p class="board-text"><%= p.body %></p>
+              <p class="board-org"><%= p.org_name %><% if (p.org_verified) { %> <span class="verified">✓</span><% } %></p>
+            </div>
+          <% }) %>
+        </div>
+      </section>
+    <% } %>
+
+    <h2 class="section-title">Open shelters &amp; pantries</h2>
+    <div class="grid">
+      <% orgs.forEach(org => { %>
+        <div class="card">
+          <span class="badge <%= org.is_open ? 'open' : 'closed' %>">
+            <span class="dot"></span><%= org.is_open ? 'Open now' : 'Closed' %>
+          </span>
+          <h3><%= org.name %><% if (org.verified) { %> <span class="verified" title="Verified by Buffalo Beacon">✓ Verified</span><% } %></h3>
+          <% if (org.address) { %>
+            <p class="addr"><a class="directions" href="<%= mapsLink(org.address) %>" target="_blank" rel="noopener">📍 <%= org.address %></a></p>
+          <% } %>
+          <% if (org.hours_text) { %>
+            <p class="hours"><strong>Hours:</strong> <%= org.hours_text %></p>
+          <% } %>
+          <% if (org.description) { %>
+            <p class="desc"><%= org.description %></p>
+          <% } %>
+
+          <% if (org.address) { %>
+            <a class="directions-btn" href="<%= mapsLink(org.address) %>" target="_blank" rel="noopener">Get directions</a>
+          <% } %>
+
+          <form class="subscribe-form" method="post" action="/subscribe/<%= org.id %>">
+            <input type="email" name="email" placeholder="your email" required>
+            <button type="submit">Get updates</button>
+          </form>
+        </div>
+      <% }) %>
+    </div>
+  </main>
+
+  <footer>Buffalo Beacon &mdash; built to help neighbors find open doors during hard weather.</footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const pins = <%- JSON.stringify(pins) %>;
+    const map = L.map('map').setView([42.8864, -78.8784], 12); // downtown Buffalo
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 19,
+    }).addTo(map);
+
+    const markers = [];
+    pins.forEach(p => {
+      const color = p.isOpen ? '#2a9d4b' : '#8a8f98';
+      const icon = L.divIcon({
+        className: 'beacon-pin',
+        html: `<div style="background:${color}"></div>`,
+        iconSize: [22, 22],
+        iconAnchor: [11, 11],
+      });
+      const m = L.marker([p.lat, p.lng], { icon }).addTo(map);
+      m.bindPopup(
+        `<strong>${p.name}</strong><br>${p.isOpen ? '🟢 Open now' : '⚪ Closed'}<br>` +
+        `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.address)}" target="_blank" rel="noopener">Get directions</a>`
+      );
+      markers.push(m);
+    });
+
+    // Zoom to fit all pins if we have any.
+    if (markers.length) {
+      map.fitBounds(L.featureGroup(markers).getBounds().pad(0.3));
+    }
+  </script>
+</body>
+</html>

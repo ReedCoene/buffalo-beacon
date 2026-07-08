@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Organization Login &mdash; Buffalo Beacon</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <a href="/"><h1>Buffalo <span>Beacon</span></h1></a>
+  </header>
+  <main>
+    <% if (msg) { %>
+      <div class="msg"><%= msg %></div>
+    <% } %>
+
+    <div class="card">
+      <% if (sent) { %>
+        <h2>Check your email</h2>
+        <p>If that email has a Buffalo Beacon account, a login link is on its way. It expires in 15 minutes.</p>
+      <% } else { %>
+        <h2>Organization Login</h2>
+        <p>Accounts are set up by the Buffalo Beacon team. Enter your registered email to get a login link &mdash; no password needed.</p>
+        <form method="post" action="/login">
+          <div class="field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <button type="submit">Send login link</button>
+        </form>
+      <% } %>
+    </div>
+  </main>
+</body>
+</html>

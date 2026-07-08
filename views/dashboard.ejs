@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= org.name %> Dashboard &mdash; Buffalo Beacon</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <a href="/"><h1>Buffalo <span>Beacon</span></h1></a>
+    <form method="post" action="/logout"><button class="secondary" type="submit">Log out</button></form>
+  </header>
+  <main>
+    <h2><%= org.name %> Dashboard</h2>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="error"><%= error %></div>
+    <% } %>
+    <% if (typeof saved !== 'undefined' && saved) { %>
+      <div class="msg">
+        Saved &mdash; your public page is updated<% if (org.is_open) { %> and subscribers were emailed<% } %>.
+        <% if (typeof tweetUrl !== 'undefined' && tweetUrl) { %>
+          <div style="margin-top:10px;">
+            <a class="tweet-btn" href="<%= tweetUrl %>" target="_blank" rel="noopener">Post this update to X / Twitter</a>
+            <span class="tweet-hint">Opens X with your update pre-written &mdash; just click Post.</span>
+          </div>
+        <% } %>
+      </div>
+    <% } %>
+
+    <div class="card">
+      <form method="post" action="/dashboard/update">
+        <div class="field">
+          <label for="name">Organization name *</label>
+          <input type="text" id="name" name="name" value="<%= org.name %>" required>
+        </div>
+
+        <div class="field">
+          <label for="address">Address *</label>
+          <input type="text" id="address" name="address" value="<%= org.address %>" required>
+        </div>
+
+        <div class="field">
+          <label for="hours_text">Hours *</label>
+          <input type="text" id="hours_text" name="hours_text" value="<%= org.hours_text %>" placeholder="e.g. Today 9am-3pm" required>
+        </div>
+
+        <div class="field">
+          <label>
+            <input type="checkbox" id="is_open" name="is_open" <%= org.is_open ? 'checked' : '' %> style="width:auto;">
+            We are open right now
+          </label>
+        </div>
+
+        <div class="field">
+          <label for="description">Description</label>
+          <textarea id="description" name="description" placeholder="Give us a slight description that AI can improve, e.g. 'open 9-3 today, hot food, giving away toiletries'"><%= org.description %></textarea>
+          <button type="button" class="secondary" id="improveBtn" style="margin-top:8px;">Improve with AI</button>
+          <div class="ai-preview" id="aiPreview">
+            <div id="aiPreviewText"></div>
+            <div style="margin-top:8px;">
+              <button type="button" id="useAi">Use this</button>
+              <button type="button" class="secondary" id="discardAi">Keep my original</button>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit">Save</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Community board</h3>
+      <p style="color:#667085;margin-top:0;">Post a <strong>need</strong> (volunteers, donations) or an <strong>update</strong> (an event, an announcement). These show up publicly so neighbors can help or show up.</p>
+
+      <form method="post" action="/dashboard/post">
+        <div class="field">
+          <label for="kind">Type</label>
+          <select id="kind" name="kind" style="font-family:inherit;font-size:1rem;padding:10px 12px;border:1px solid #cfd6de;border-radius:10px;">
+            <option value="need">🙋 Need help (volunteers / donations)</option>
+            <option value="update">📣 Update / event</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="body">Message</label>
+          <textarea id="body" name="body" placeholder="e.g. We need 4 volunteers Saturday 8am to sort coat donations — walk-ins welcome!" required></textarea>
+        </div>
+        <button type="submit">Post to board</button>
+      </form>
+
+      <% if (posts && posts.length) { %>
+        <h4>Your posts</h4>
+        <% posts.forEach(p => { %>
+          <div class="board-item">
+            <span class="board-tag <%= p.kind %>"><%= p.kind === 'need' ? 'NEED' : 'UPDATE' %></span>
+            <span class="board-body"><%= p.body %></span>
+            <form method="post" action="/dashboard/post/<%= p.id %>/delete" style="display:inline;">
+              <button type="submit" class="link-btn" title="Delete">Remove</button>
+            </form>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+  </main>
+
+  <script>
+    const improveBtn = document.getElementById('improveBtn');
+    const preview = document.getElementById('aiPreview');
+    const previewText = document.getElementById('aiPreviewText');
+    const description = document.getElementById('description');
+    let originalBeforeAi = null;
+
+    improveBtn.addEventListener('click', async () => {
+      improveBtn.disabled = true;
+      improveBtn.textContent = 'Improving...';
+      try {
+        const res = await fetch('/dashboard/improve', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: description.value }),
+        });
+        const data = await res.json();
+        originalBeforeAi = description.value;
+        previewText.textContent = data.improved;
+        preview.style.display = 'block';
+      } finally {
+        improveBtn.disabled = false;
+        improveBtn.textContent = 'Improve with AI';
+      }
+    });
+
+    document.getElementById('useAi').addEventListener('click', () => {
+      description.value = previewText.textContent;
+      preview.style.display = 'none';
+    });
+
+    document.getElementById('discardAi').addEventListener('click', () => {
+      preview.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
