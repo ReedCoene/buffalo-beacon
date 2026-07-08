@@ -7,24 +7,19 @@
 <body>
   <%- include('partials/header') %>
 
-  <section class="hero">
-    <div class="hero-inner">
-      <p class="hero-eyebrow">Buffalo, NY &middot; Verified live status</p>
-      <h2>Find an open door.</h2>
-      <p class="hero-sub">Live shelters, food pantries, and warming centers across Buffalo &mdash; when the weather turns dangerous and you need a warm place or a hot meal.</p>
-      <div class="hero-stats">
-        <% if (orgs.length === 0) { %>
-          <span class="stat"><span class="pulse-dot" aria-hidden="true"></span>Now onboarding Buffalo shelters &amp; pantries &mdash; launching for winter</span>
-        <% } else { %>
-          <% const openCount = orgs.filter(o => o.is_open).length; %>
-          <% const verifiedCount = orgs.filter(o => o.verified).length; %>
-          <span class="stat"><span class="pulse-dot" aria-hidden="true"></span><strong><%= openCount %></strong>&nbsp;open right now</span>
-          <span class="stat"><strong><%= verifiedCount %></strong>&nbsp;verified organization<%= verifiedCount === 1 ? '' : 's' %></span>
-          <span class="stat">updated by the orgs themselves</span>
-        <% } %>
-      </div>
-    </div>
-  </section>
+  <div class="page-head">
+    <h2>Who's open right now in Buffalo</h2>
+    <p>Live status of shelters, food pantries, and warming centers &mdash; updated directly by the organizations, verified by 716 Beacon.</p>
+  </div>
+
+  <% const openCount = orgs.filter(o => o.is_open).length; %>
+  <% if (orgs.length === 0) { %>
+    <div class="status-bar">Onboarding Buffalo shelters and pantries now &mdash; launching for winter.</div>
+  <% } else if (openCount > 0) { %>
+    <div class="status-bar some-open"><span class="count"><%= openCount %> open now</span> &middot; <%= orgs.length %> verified organization<%= orgs.length === 1 ? '' : 's' %> listed</div>
+  <% } else { %>
+    <div class="status-bar">Nothing open right now &middot; <%= orgs.length %> verified organization<%= orgs.length === 1 ? '' : 's' %> listed</div>
+  <% } %>
 
   <main>
     <% if (msg) { %>
@@ -38,13 +33,13 @@
         <h2 class="section-title">Here's what it will look like</h2>
         <p class="section-sub">We're onboarding Buffalo's shelters and pantries now. Once an organization is verified, its live status appears here &mdash; like this:</p>
         <div class="grid">
-          <article class="card demo" aria-label="Sample listing — not a real organization">
+          <article class="card demo is-open" aria-label="Sample listing — not a real organization">
             <div class="card-top">
               <span class="badge open"><span class="dot" aria-hidden="true"></span>Open now</span>
               <span class="demo-tag">Sample</span>
             </div>
             <h3>Example Warming Center <span class="verified">&#10003; Verified</span></h3>
-            <p class="addr">&#128205; 123 Main St, Buffalo, NY</p>
+            <p class="addr">123 Main St, Buffalo, NY</p>
             <p class="hours"><strong>Hours:</strong> Tonight 6pm&ndash;8am</p>
             <p class="desc">Warm beds, hot coffee, and a safe place to wait out the storm. Walk-ins welcome.</p>
             <div class="card-actions">
@@ -57,7 +52,7 @@
               <span class="demo-tag">Sample</span>
             </div>
             <h3>Example Food Pantry <span class="verified">&#10003; Verified</span></h3>
-            <p class="addr">&#128205; 456 Elmwood Ave, Buffalo, NY</p>
+            <p class="addr">456 Elmwood Ave, Buffalo, NY</p>
             <p class="hours"><strong>Hours:</strong> Saturdays 9am&ndash;1pm</p>
             <p class="desc">Groceries and hot meals every Saturday morning &mdash; no questions, no paperwork.</p>
             <div class="card-actions">
@@ -90,7 +85,7 @@
     <% } %>
     <div class="grid">
       <% orgs.forEach(org => { %>
-        <article class="card">
+        <article class="card <%= org.is_open ? 'is-open' : '' %>">
           <div class="card-top">
             <span class="badge <%= org.is_open ? 'open' : 'closed' %>">
               <span class="dot" aria-hidden="true"></span><%= org.is_open ? 'Open now' : 'Closed' %>
@@ -100,7 +95,7 @@
           </div>
           <h3><%= org.name %><% if (org.verified) { %> <span class="verified" title="Verified by 716 Beacon">&#10003; Verified</span><% } %></h3>
           <% if (org.address) { %>
-            <p class="addr"><a class="directions" href="<%= mapsLink(org.address) %>" target="_blank" rel="noopener">&#128205; <%= org.address %></a></p>
+            <p class="addr"><a class="directions" href="<%= mapsLink(org.address) %>" target="_blank" rel="noopener"><%= org.address %></a></p>
           <% } %>
           <% if (org.hours_text) { %>
             <p class="hours"><strong>Hours:</strong> <%= org.hours_text %></p>
@@ -140,7 +135,7 @@
 
     const markers = [];
     pins.forEach(p => {
-      const color = p.isOpen ? '#1e9e50' : '#7d8698';
+      const color = p.isOpen ? '#157f3d' : '#5f6b7a';
       const icon = L.divIcon({
         className: 'beacon-pin',
         html: `<div class="${p.isOpen ? 'pin-open' : ''}" style="background:${color}"></div>`,
@@ -149,7 +144,7 @@
       });
       const m = L.marker([p.lat, p.lng], { icon }).addTo(map);
       m.bindPopup(
-        `<strong>${esc(p.name)}</strong><br>${p.isOpen ? '🟢 Open now' : '⚪ Closed'}<br>` +
+        `<strong>${esc(p.name)}</strong><br>${p.isOpen ? 'Open now' : 'Closed'}<br>` +
         `<a href="https://www.google.com/maps/search/?api=1&query=${esc(encodeURIComponent(p.address))}" target="_blank" rel="noopener">Get directions</a>`
       );
       markers.push(m);

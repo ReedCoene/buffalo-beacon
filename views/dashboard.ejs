@@ -59,7 +59,7 @@
         <div class="field">
           <label for="description">Description</label>
           <textarea id="description" name="description" placeholder="A rough note is fine — e.g. 'open 9-3 today, hot food, giving away toiletries' — then let AI polish it."><%= org.description %></textarea>
-          <button type="button" class="secondary small" id="improveBtn" style="margin-top:10px;">&#10024; Improve with AI</button>
+          <button type="button" class="secondary small" id="improveBtn" style="margin-top:10px;">Improve with AI</button>
           <div class="ai-preview" id="aiPreview">
             <p class="ai-preview-label">AI suggestion &mdash; you decide</p>
             <div id="aiPreviewText"></div>
@@ -82,8 +82,8 @@
         <div class="field">
           <label for="kind">Type</label>
           <select id="kind" name="kind">
-            <option value="need">&#128587; Need help (volunteers / donations)</option>
-            <option value="update">&#128226; Update / event</option>
+            <option value="need">Need help (volunteers / donations)</option>
+            <option value="update">Update / event</option>
           </select>
         </div>
         <div class="field">
@@ -132,7 +132,7 @@
         preview.style.display = 'block';
       } finally {
         improveBtn.disabled = false;
-        improveBtn.textContent = '✨ Improve with AI';
+        improveBtn.textContent = 'Improve with AI';
       }
     });
 
