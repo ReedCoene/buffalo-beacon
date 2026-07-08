@@ -3,7 +3,8 @@
 const { DatabaseSync } = require('node:sqlite');
 const path = require('path');
 
-const db = new DatabaseSync(path.join(__dirname, 'beacon.sqlite'));
+// DB_PATH lets production point at a persistent volume (e.g. /data/beacon.sqlite on Fly).
+const db = new DatabaseSync(process.env.DB_PATH || path.join(__dirname, 'beacon.sqlite'));
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS organizations (

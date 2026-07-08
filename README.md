@@ -64,6 +64,23 @@ unchanged. Add keys in `.env` (copy from `.env.example`) to go live:
 - `ANTHROPIC_API_KEY` — turns on real AI description polishing
 - `RESEND_API_KEY` — turns on real email delivery
 
+## Deploying (Fly.io)
+
+The repo ships with a `Dockerfile` and `fly.toml`. One-time setup:
+
+```bash
+fly launch --no-deploy        # accepts the fly.toml in the repo
+fly volumes create beacon_data --region ewr --size 1
+fly secrets set SESSION_SECRET=$(openssl rand -hex 32) \
+  BASE_URL=https://buffalo-beacon.fly.dev \
+  ANTHROPIC_API_KEY=... RESEND_API_KEY=...
+fly deploy
+```
+
+`BASE_URL` matters — magic-link logins and unsubscribe links are built from it.
+SQLite lives on the `beacon_data` volume (`DB_PATH=/data/beacon.sqlite`), so
+data survives deploys.
+
 ## Adding a real organization
 
 ```bash

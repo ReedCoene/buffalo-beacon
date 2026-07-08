@@ -1,0 +1,27 @@
+# Fly.io config — deploy with `fly launch` (uses this file) then `fly deploy`.
+# Region ewr (Newark) is the closest to Buffalo.
+app = "buffalo-beacon"
+primary_region = "ewr"
+
+[env]
+  PORT = "3000"
+  DB_PATH = "/data/beacon.sqlite"
+
+# SQLite lives on a persistent volume so data survives deploys/restarts.
+# Create once: fly volumes create beacon_data --region ewr --size 1
+[[mounts]]
+  source = "beacon_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  # ponytail: min 0 = free-tier friendly with ~300ms cold starts; bump to 1
+  # before a real storm season so the site is always instantly up.
+  min_machines_running = 0
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"
