@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <%- include('partials/head', { title: 'Organization login — Buffalo Beacon' }) %>
+  <%- include('partials/head', { title: 'Organization login — 716 Beacon' }) %>
 </head>
 <body>
   <%- include('partials/header') %>
@@ -14,11 +14,11 @@
     <div class="panel">
       <% if (sent) { %>
         <h3>Check your email</h3>
-        <p>If that email has a Buffalo Beacon account, a login link is on its way. It expires in 15 minutes.</p>
+        <p>If that email has a 716 Beacon account, a login link is on its way. It expires in 15 minutes.</p>
         <p class="hint">Nothing arriving? Check spam, or request a new link.</p>
       <% } else { %>
         <h3>Organization login</h3>
-        <p class="panel-sub">Accounts are set up by the Buffalo Beacon team &mdash; that's how every listing stays verified. Enter your registered email for a one-click login link. No password needed.</p>
+        <p class="panel-sub">Accounts are set up by the 716 Beacon team &mdash; that's how every listing stays verified. Enter your registered email for a one-click login link. No password needed.</p>
         <form method="post" action="/login">
           <div class="field">
             <label for="email">Email</label>

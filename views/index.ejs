@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <%- include('partials/head', { title: 'Buffalo Beacon — who\'s open right now' }) %>
+  <%- include('partials/head', { title: '716 Beacon — who\'s open right now' }) %>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
@@ -51,7 +51,7 @@
 
     <% if (orgs.length) { %>
       <h2 class="section-title">Open shelters &amp; pantries</h2>
-      <p class="section-sub">Open places sort to the top. Every <span class="verified">&#10003; Verified</span> badge means Buffalo Beacon vetted the organization itself.</p>
+      <p class="section-sub">Open places sort to the top. Every <span class="verified">&#10003; Verified</span> badge means 716 Beacon vetted the organization itself.</p>
     <% } %>
     <div class="grid">
       <% orgs.forEach(org => { %>
@@ -63,7 +63,7 @@
             <% const fresh = timeAgo(org.updated_at); %>
             <% if (fresh) { %><span class="freshness">Updated <%= fresh %></span><% } %>
           </div>
-          <h3><%= org.name %><% if (org.verified) { %> <span class="verified" title="Verified by Buffalo Beacon">&#10003; Verified</span><% } %></h3>
+          <h3><%= org.name %><% if (org.verified) { %> <span class="verified" title="Verified by 716 Beacon">&#10003; Verified</span><% } %></h3>
           <% if (org.address) { %>
             <p class="addr"><a class="directions" href="<%= mapsLink(org.address) %>" target="_blank" rel="noopener">&#128205; <%= org.address %></a></p>
           <% } %>

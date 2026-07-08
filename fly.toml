@@ -3,7 +3,7 @@
 # copy of the volume — two divergent SQLite files means magic-link logins and
 # status updates only work on whichever machine you happen to hit.
 # Region ewr (Newark) is the closest to Buffalo.
-app = "buffalo-beacon"
+app = "716-beacon"
 primary_region = "ewr"
 
 [env]

@@ -1,5 +1,5 @@
 {
-  "name": "buffalo-beacon",
+  "name": "716-beacon",
   "version": "1.0.0",
   "description": "Real-time directory of open shelters, food pantries, and warming centers during emergencies.",
   "main": "server.js",

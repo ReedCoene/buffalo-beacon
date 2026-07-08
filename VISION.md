@@ -1,4 +1,4 @@
-# Buffalo Beacon — Vision & Strategy
+# 716 Beacon — Vision & Strategy
 
 *A verified, real-time board of open shelters, food pantries, and warming centers — built for the neighbors and frontline helpers who get people to safety, especially when a storm turns every other channel to noise.*
 
@@ -6,7 +6,7 @@
 
 ## 1. The thesis in one paragraph
 
-During an emergency, the scarce resource is not information — it's **trustworthy, current, findable** information. When a Buffalo storm hits, help *does* exist: churches open their basements, pantries hand out food, rec centers become warming shelters. But that help is announced through a hundred scattered Facebook posts, hand-written signs, and word of mouth. The people who most need it — the elderly, the isolated, the unhoused, people without reliable internet — are the least able to piece it together in the moment. Buffalo Beacon is the layer that organizes that chaos: a single, verified, real-time source that the people who *help* others can trust and amplify.
+During an emergency, the scarce resource is not information — it's **trustworthy, current, findable** information. When a Buffalo storm hits, help *does* exist: churches open their basements, pantries hand out food, rec centers become warming shelters. But that help is announced through a hundred scattered Facebook posts, hand-written signs, and word of mouth. The people who most need it — the elderly, the isolated, the unhoused, people without reliable internet — are the least able to piece it together in the moment. 716 Beacon is the layer that organizes that chaos: a single, verified, real-time source that the people who *help* others can trust and amplify.
 
 ---
 
@@ -24,7 +24,7 @@ Today the answer is "scroll and hope." That's not a system. That's the absence o
 
 ---
 
-## 3. What Buffalo Beacon actually is
+## 3. What 716 Beacon actually is
 
 A simple web platform with two sides:
 
@@ -169,4 +169,4 @@ Concrete signals, not vanity metrics:
 
 ## The bottom line
 
-Buffalo Beacon isn't trying to be a social network, a mental-health app, or a prettier Google Maps. It's a narrow, honest fix for a documented, deadly gap: **when help opens its doors during a storm, the people who need it can't reliably find out in time.** It works by arming the helpers, feeding the platforms people already use, earning trust through verification, and staying alive year-round through the everyday work of food and volunteering. That's not a bummy website. That's a piece of civic infrastructure a city like Buffalo should have had already.
+716 Beacon isn't trying to be a social network, a mental-health app, or a prettier Google Maps. It's a narrow, honest fix for a documented, deadly gap: **when help opens its doors during a storm, the people who need it can't reliably find out in time.** It works by arming the helpers, feeding the platforms people already use, earning trust through verification, and staying alive year-round through the everyday work of food and volunteering. That's not a bummy website. That's a piece of civic infrastructure a city like Buffalo should have had already.

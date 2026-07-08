@@ -124,8 +124,8 @@ app.post('/login', async (req, res) => {
     const link = `${BASE_URL}/auth/${token}`;
     await sendEmail(
       org.email,
-      'Your Buffalo Beacon login link',
-      `Click to log in to ${org.name}'s Buffalo Beacon dashboard (expires in ${TOKEN_TTL_MINUTES} minutes):\n\n${link}`
+      'Your 716 Beacon login link',
+      `Click to log in to ${org.name}'s 716 Beacon dashboard (expires in ${TOKEN_TTL_MINUTES} minutes):\n\n${link}`
     );
   }
 
@@ -221,5 +221,5 @@ app.post('/dashboard/update', requireOrg, async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Buffalo Beacon running at ${BASE_URL}`);
+  console.log(`716 Beacon running at ${BASE_URL}`);
 });

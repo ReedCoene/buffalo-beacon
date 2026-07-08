@@ -1,4 +1,4 @@
-# Buffalo Beacon
+# 716 Beacon
 
 A live directory of open shelters, food pantries, and warming centers — built so
 that when a Buffalo winter storm hits, the people who need a warm place or a hot
@@ -11,7 +11,7 @@ During the December 2022 blizzard (Winter Storm Elliott), dozens of people in Er
 County died — many stranded or trying to walk for help. When a church, pantry, or
 community center decides to open during a storm, there's no reliable place for the
 people who need it most to find out. It ends up as a hand-written sign on a door or
-a scattered Facebook post the most vulnerable residents never see. Buffalo Beacon is
+a scattered Facebook post the most vulnerable residents never see. 716 Beacon is
 the missing layer: one clean page anyone can check, and one-tap email alerts when a
 place opens.
 
@@ -72,7 +72,7 @@ The repo ships with a `Dockerfile` and `fly.toml`. One-time setup:
 fly launch --no-deploy        # accepts the fly.toml in the repo
 fly volumes create beacon_data --region ewr --size 1
 fly secrets set SESSION_SECRET=$(openssl rand -hex 32) \
-  BASE_URL=https://buffalo-beacon.fly.dev \
+  BASE_URL=https://716-beacon.fly.dev \
   ANTHROPIC_API_KEY=... RESEND_API_KEY=...
 fly deploy --ha=false
 ```
