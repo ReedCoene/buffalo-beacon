@@ -1,31 +1,28 @@
-# Fly.io config — deploy with `fly launch` (uses this file) then `fly deploy --ha=false`.
-# --ha=false is REQUIRED: Fly otherwise provisions two machines, each with its own
-# copy of the volume — two divergent SQLite files means magic-link logins and
-# status updates only work on whichever machine you happen to hit.
-# Region ewr (Newark) is the closest to Buffalo.
-app = "716-beacon"
-primary_region = "ewr"
+# fly.toml app configuration file generated for buffalo-beacon on 2026-07-08T01:51:00Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'buffalo-beacon'
+primary_region = 'ewr'
+
+[build]
 
 [env]
-  PORT = "3000"
-  DB_PATH = "/data/beacon.sqlite"
+  DB_PATH = '/data/beacon.sqlite'
+  PORT = '3000'
 
-# SQLite lives on a persistent volume so data survives deploys/restarts.
-# Create once: fly volumes create beacon_data --region ewr --size 1
 [[mounts]]
-  source = "beacon_data"
-  destination = "/data"
+  source = 'beacon_data'
+  destination = '/data'
 
 [http_service]
-  internal_port = 3000
+  internal_port = 8080
   force_https = true
-  auto_stop_machines = "stop"
+  auto_stop_machines = 'stop'
   auto_start_machines = true
-  # ponytail: min 0 = free-tier friendly with ~300ms cold starts — but sessions are
-  # in-memory, so every idle stop also logs out any signed-in org (they need a fresh
-  # magic link). Bump to 1 before storm season: always up, sessions survive lulls.
   min_machines_running = 0
 
 [[vm]]
-  size = "shared-cpu-1x"
-  memory = "256mb"
+  size = 'shared-cpu-1x'
+  memory = '256mb'
